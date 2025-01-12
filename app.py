@@ -53,7 +53,6 @@ if uploaded_file is not None:
 
         # filtered df
         filter_df=filtering.filter(df)
-        st.dataframe(filter_df)
 
         # word_cloud
         st.title("Word Cloud")
@@ -70,3 +69,13 @@ if uploaded_file is not None:
         st.title("Most common words")
         st.pyplot(fig)
 
+        # emoji analysis
+        most_common_emojis_df=helper.most_common_emojis(selected_user,filter_df)
+        st.title("Emoji Analysis")
+        col1,col2=st.columns(2)
+        with col1:
+            st.dataframe(most_common_emojis_df)
+        with col2:
+            fig,ax=plt.subplots()
+            ax.pie(most_common_emojis_df['count'].head(),labels=most_common_emojis_df['emoji'].head(),autopct='%0.2f')
+            st.pyplot(fig)

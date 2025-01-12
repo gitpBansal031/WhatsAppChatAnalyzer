@@ -1,6 +1,7 @@
 from collections import Counter
 import pandas as pd
-import filtering
+import emoji
+import warnings
 
 # gives most busy users in the chat
 def most_busy_users(df):
@@ -26,6 +27,18 @@ def most_common_words(selected_user,df):
     for msg in df['message']:
         for word in msg.lower().split():
             if word not in stop_words:
-                words.append(word)
-    most_common_words_df=pd.DataFrame(Counter(words).most_common(10))
+                if(word[0]!="@"):
+                    words.append(word)
+    most_common_words_df=pd.DataFrame(Counter(words).most_common(20))
     return most_common_words_df 
+
+# gives most common emojis in the chat
+warnings.filterwarnings("ignore", message="Glyph.*missing from font")
+def most_common_emojis(selected_user,df):
+    if(selected_user!="All"):
+        df=df[df['user']==selected_user]
+    emojis=[]
+    for msg in df['message']:
+        emojis.extend([c for c in msg if c in emoji.EMOJI_DATA])
+    most_common_emojis_df=pd.DataFrame(Counter(emojis).most_common(len(Counter(emojis)))).rename(columns={0:'emoji',1:'count'})
+    return most_common_emojis_df
