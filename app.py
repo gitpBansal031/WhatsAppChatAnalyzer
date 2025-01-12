@@ -2,6 +2,8 @@ import streamlit as st
 import preprocessor
 import count_stats
 import helper
+import word_cloud
+import filtering
 import matplotlib.pyplot as plt
 st.sidebar.title('Whastsapp Chat Analyser')
 uploaded_file = st.sidebar.file_uploader("Choose a file")
@@ -48,3 +50,23 @@ if uploaded_file is not None:
                 st.pyplot(fig)
             with col2:
                 st.dataframe(new_df)
+
+        # filtered df
+        filter_df=filtering.filter(df)
+        st.dataframe(filter_df)
+
+        # word_cloud
+        st.title("Word Cloud")
+        df_wc=word_cloud.create_word_cloud(selected_user,filter_df)
+        fig,ax=plt.subplots()
+        ax.imshow(df_wc)
+        st.pyplot(fig)
+
+        # most common words
+        most_common_words_df=helper.most_common_words(selected_user,filter_df)
+        fig,ax=plt.subplots()
+        ax.barh(most_common_words_df[0],most_common_words_df[1])
+        plt.xticks(rotation='vertical')
+        st.title("Most common words")
+        st.pyplot(fig)
+
