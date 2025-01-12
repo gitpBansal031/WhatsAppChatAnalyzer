@@ -11,7 +11,6 @@ if uploaded_file is not None:
     bytes_data=uploaded_file.getvalue()
     data=bytes_data.decode('utf-8')
     df=preprocessor.preprocess(data)
-    st.dataframe(df)
 
     # making side buttons
     user_list=df['user'].unique().tolist()
@@ -23,6 +22,7 @@ if uploaded_file is not None:
 
         # count_stats 
         msg_count,words_count,media_count,links_count=count_stats.fetch_stats(selected_user,df)
+        st.title("Top Statistics")
         col1,col2,col3,col4=st.columns(4)
         with col1:
             st.header("Total messages")
@@ -78,4 +78,38 @@ if uploaded_file is not None:
         with col2:
             fig,ax=plt.subplots()
             ax.pie(most_common_emojis_df['count'].head(),labels=most_common_emojis_df['emoji'].head(),autopct='%0.2f')
+            st.pyplot(fig)
+
+        # monthly analysis
+        st.title("Monthly Analysis")
+        monthly_timeline=helper.monthly_timeline(selected_user,filter_df)
+        fig,ax=plt.subplots()
+        ax.plot(monthly_timeline['time'],monthly_timeline['message'],color='green')
+        plt.xticks(rotation='vertical')
+        st.pyplot(fig)
+
+        # daily timeline
+        st.title("Daily Analysis")
+        daily_timeline=helper.daily_timeline(selected_user,filter_df)
+        fig,ax=plt.subplots()
+        ax.plot(daily_timeline['only_date'],daily_timeline['message'],color='black')
+        plt.xticks(rotation='vertical')
+        st.pyplot(fig)
+
+        # weekly analysis
+        st.title("Activity map")
+        col1,col2=st.columns(2)
+        with col1:
+            st.header("Most busy day")
+            busy_day=helper.week_activity_map(selected_user,df)
+            fig,ax= plt.subplots()
+            ax.bar(busy_day.index,busy_day.values)
+            plt.xticks(rotation='vertical')
+            st.pyplot(fig)
+        with col2:
+            st.header("Most busy month")
+            busy_month=helper.month_activity_map(selected_user,df)
+            fig,ax= plt.subplots()
+            ax.bar(busy_month.index,busy_month.values,color="orange")
+            plt.xticks(rotation='vertical')
             st.pyplot(fig)

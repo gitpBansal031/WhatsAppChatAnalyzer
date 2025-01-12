@@ -42,3 +42,33 @@ def most_common_emojis(selected_user,df):
         emojis.extend([c for c in msg if c in emoji.EMOJI_DATA])
     most_common_emojis_df=pd.DataFrame(Counter(emojis).most_common(len(Counter(emojis)))).rename(columns={0:'emoji',1:'count'})
     return most_common_emojis_df
+
+# month wise analysis
+def monthly_timeline(selected_user,df):
+    if(selected_user!="All"):
+        df=df[df['user']==selected_user]
+    timeline=df.groupby(['year','month_num','month'])['message'].count().reset_index()
+    time=[]
+    for i in range(timeline.shape[0]):
+        time.append(timeline['month'][i]+"-"+str(timeline['year'][i]))
+    timeline['time']=time
+    return timeline
+
+# daily analysis
+def daily_timeline(selected_user,df):
+    if(selected_user!="All"):
+        df=df[df['user']==selected_user]
+    timeline=df.groupby(['only_date'])['message'].count().reset_index()
+    return timeline
+
+# week activity map
+def week_activity_map(selected_user,df):
+    if(selected_user!="All"):
+        df=df[df['user']==selected_user]
+    return df['day_name'].value_counts()
+
+# monthly activity map
+def month_activity_map(selected_user,df):
+    if(selected_user!="All"):
+        df=df[df['user']==selected_user]
+    return df['month'].value_counts()
